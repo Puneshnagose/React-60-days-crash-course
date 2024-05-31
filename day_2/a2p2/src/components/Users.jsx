@@ -1,30 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import Post from "./Post";
+import User from "./User";
 import LoadingIndicator from "./LoadingIndicator";
 import ErrorIndicator from "./ErrorIndicator";
 
-function Posts() {
+function Users() {
   const [loading, setLoading] = useState(false);
-  const [posts, setPosts] = useState([]);
+  const [users, setUsers] = useState([]);
   const [error, setError] = useState(false);
 
   async function fetchAndUpdateData() {
     setLoading(true);
-    try{
-        
+    try {
       let res = await axios({
         method: "get",
-        url: `https://jsonplaceholder.typicode.com/posts`,
+        url: `https://reqres.in/api/users`,
       });
 
-      setPosts(res.data);
+      setUsers(res?.data?.data);
       setLoading(false);
     } catch (error) {
       setError(true);
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    fetchAndUpdateData();
+  }, []);
 
   if (loading) {
     return <LoadingIndicator />;
@@ -36,15 +39,12 @@ function Posts() {
 
   return (
     <div>
-      <h1>List of Posts</h1>
-      <button onClick={fetchAndUpdateData}>
-        Click to display list of posts
-      </button>
-      {posts?.map((post) => (
-        <Post {...post} key={post.id} />
+      <h1>List of users</h1>
+      {users?.map((user) => (
+        <User {...user} key={user.id} />
       ))}
     </div>
   );
 }
 
-export default Posts;
+export default Users;
